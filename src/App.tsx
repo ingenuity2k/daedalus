@@ -1,122 +1,127 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+/**
+ * D.A.E.D.A.L.U.S. — Elysium Area Elite Dangerous Assembly, Logistics, Upgrades & Settlement
+ *
+ * Full-stack colonization manager for Elite Dangerous.
+ */
+import { useState, useCallback } from "react";
+import type { SpanshSystemHit } from "./api/spansh";
+import { fetchSystem } from "./api/spansh";
+import { toBody } from "./components/Orrery/orreryUtils";
+import type { Body } from "./data/types";
+import Orrery from "./components/Orrery/Orrery";
+import SystemSearch from "./components/SystemSearch";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [bodies, setBodies] = useState<Body[]>([]);
+  const [systemName, setSystemName] = useState<string>("");
+  const [selectedBodyId, setSelectedBodyId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSelectSystem = useCallback(async (hit: SpanshSystemHit) => {
+    setLoading(true);
+    setError(null);
+    setSystemName(hit.name);
+    try {
+      const data = await fetchSystem(hit.id64);
+      setBodies(data.bodies.map(toBody));
+      setSelectedBodyId(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load system");
+      setBodies([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div style={{
+      width: "100vw",
+      height: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      background: "#0a0e17",
+      color: "#eee",
+      fontFamily: "'Segoe UI', system-ui, sans-serif",
+    }}>
+      {/* Header */}
+      <header style={{
+        padding: "12px 20px",
+        borderBottom: "1px solid #1a1f2e",
+        display: "flex",
+        alignItems: "center",
+        gap: 20,
+        flexShrink: 0,
+      }}>
+        <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700, letterSpacing: 2, color: "#00ff88" }}>
+          DAEDALUS
+        </h1>
+        <span style={{ color: "#444", fontSize: 11, fontFamily: "monospace" }}>
+          Elysium Area Elite Dangerous Assembly, Logistics, Upgrades & Settlement
+        </span>
+        <div style={{ flex: 1 }} />
+        <SystemSearch onSelect={handleSelectSystem} />
+      </header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      {/* System name bar */}
+      {systemName && (
+        <div style={{
+          padding: "8px 20px",
+          background: "#111827",
+          borderBottom: "1px solid #1a1f2e",
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          fontSize: 13,
+        }}>
+          <span style={{ color: "#666" }}>System:</span>
+          <span style={{ color: "#00ff88", fontWeight: 600 }}>{systemName}</span>
+          <span style={{ color: "#444" }}>·</span>
+          <span style={{ color: "#666" }}>{bodies.length} bodies</span>
+          {loading && <span style={{ color: "#ffaa00" }}>Loading...</span>}
+          {error && <span style={{ color: "#ff4444" }}>{error}</span>}
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* Orrery */}
+      <div style={{ flex: 1, position: "relative" }}>
+        {bodies.length > 0 ? (
+          <Orrery
+            bodies={bodies}
+            selectedBodyId={selectedBodyId}
+            onSelectBody={setSelectedBodyId}
+          />
+        ) : (
+          <EmptyState loading={loading} />
+        )}
+      </div>
+    </div>
+  );
 }
 
-export default App
+function EmptyState({ loading }: { loading: boolean }) {
+  return (
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      color: "#333",
+      gap: 12,
+    }}>
+      {loading ? (
+        <>
+          <div style={{ fontSize: 24 }}>🪶</div>
+          <div style={{ fontSize: 14, color: "#555" }}>Loading system data...</div>
+        </>
+      ) : (
+        <>
+          <div style={{ fontSize: 48, opacity: 0.3 }}>🪶</div>
+          <div style={{ fontSize: 16, color: "#444" }}>Search for a system to begin</div>
+          <div style={{ fontSize: 12, color: "#333" }}>Build your wings. Reach new worlds.</div>
+        </>
+      )}
+    </div>
+  );
+}
