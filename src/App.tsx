@@ -1,5 +1,5 @@
 /**
- * D.A.E.D.A.L.U.S. — Elysium Area Elite Dangerous Assembly, Logistics, Upgrades & Settlement
+ * D.A.E.D.A.L.U.S. — Dominion Architects Elite Dangerous Assembly, Logistics, Upgrades & Settlement
  *
  * Full-stack colonization manager for Elite Dangerous.
  */
@@ -57,7 +57,7 @@ export default function App() {
           DAEDALUS
         </h1>
         <span style={{ color: "#444", fontSize: 11, fontFamily: "monospace" }}>
-          Elysium Area Elite Dangerous Assembly, Logistics, Upgrades & Settlement
+          Dominion Architects — Elite Dangerous — Assembly, Logistics, Upgrades & Settlement
         </span>
         <div style={{ flex: 1 }} />
         <SystemSearch onSelect={handleSelectSystem} />
