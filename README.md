@@ -1,6 +1,6 @@
-# DAEDALUS
+# DAE:DALUS
 
-**Dominion Architects | Elite Dangerous — Assembly, Logistics, Utilization & Settlement**
+**Dominion Architects | Elite : Dangerous — Assembly, Logistics, Utilization & Settlement**
 
 A full-stack colonization manager for Elite Dangerous. Plan system builds, track commodity deliveries, and visualize your expanding civilization with an interactive Orrery-style system map.
 
